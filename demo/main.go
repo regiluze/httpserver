@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/regiluze/go-spikes/httpserver"
+	"github.com/regiluze/httpserver"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	uploadHandler := NewImageUploadHandler()
 	server := httpserver.NewHttpServer(uploadHandler, *address, *port)
 	server.SetErrTemplate(ErrorTemplate)
-	//	server.SetNotFoundTemplate(NotFoundTemplate)
+	server.SetNotFoundTemplate(NotFoundTemplate)
 	error := server.Start()
 	if error != nil {
 		fmt.Println(error)

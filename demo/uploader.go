@@ -7,7 +7,7 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
-	"github.com/regiluze/go-spikes/httpserver"
+	"github.com/regiluze/httpserver"
 )
 
 var uploadTemplate = template.Must(template.ParseFiles("html/index.html"))
