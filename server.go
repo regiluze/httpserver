@@ -23,13 +23,12 @@ func NewError(msg string) *ServerError {
 type HttpServer struct {
 	port             string
 	address          string
-	handler          routeHandler
 	errTemplate      *template.Template
 	notFoundTemplate *template.Template
 }
 
-func NewHttpServer(h routeHandler, a string, p string) *HttpServer {
-	s := &HttpServer{handler: h, address: a, port: p}
+func NewHttpServer(a string, p string) *HttpServer {
+	s := &HttpServer{address: a, port: p}
 	return s
 }
 
@@ -74,10 +73,13 @@ func (s *HttpServer) NotFound(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *HttpServer) Start() error {
-	r := s.handler.HandleRoutes(s.errorHandler)
+func (s *HttpServer) Deploy(h routeHandler) {
+	r := h.HandleRoutes(s.errorHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", r)
 	r.NotFoundHandler = http.HandlerFunc(s.NotFound)
+}
+
+func (s *HttpServer) Start() error {
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }

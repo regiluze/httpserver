@@ -14,10 +14,11 @@ func main() {
 	port := flag.String("port", "8080", "listen port")
 	address := flag.String("address", "0.0.0.0", "server address")
 	flag.Parse()
-	uploadHandler := NewImageUploadHandler()
-	server := httpserver.NewHttpServer(uploadHandler, *address, *port)
+	uploadImageApp := NewImageUploadHandler()
+	server := httpserver.NewHttpServer(*address, *port)
 	server.SetErrTemplate(ErrorTemplate)
 	server.SetNotFoundTemplate(NotFoundTemplate)
+	server.Deploy(updateImageApp)
 	error := server.Start()
 	if error != nil {
 		fmt.Println(error)
