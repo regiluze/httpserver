@@ -1,0 +1,56 @@
+
+body {
+    background-color: #111111;
+    color: #eeeeee;
+    font-family: color: #333333;
+    font-family: 'Lucida Console', Monaco, monospace;
+    padding-left: 100px;
+}
+
+body.error {
+    background-color: #FF9999;
+    color: #eeeeee;
+    font-family: color: #333333;
+    font-family: 'Lucida Console', Monaco, monospace;
+    padding-left: 100px;
+}
+
+body.error404 {
+    background-color: white;
+    color: red;
+    font-family: color: #333333;
+    font-family: 'Lucida Console', Monaco, monospace;
+    padding-left: 100px;
+}
+
+.error{
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding-left: 180px; /* Equal to width of new image */
+  background: url('../img/broken.png') 700px 50px  no-repeat;
+}
+
+.error404{
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding-left: 180px; /* Equal to width of new image */
+  background: url('../img/dharma.png') 700px 50px  no-repeat;
+}
+
+h1.code {
+  color: black;
+  font-size: 90px;
+  font-family: 'Francois One', sans-serif;
+}
+
+h4 {
+    margin-bottom: 1px;
+}
+  
+.title {
+  display: block;
+  width: 99%;
+  border-bottom: 1px solid white;
+}
