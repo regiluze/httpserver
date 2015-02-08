@@ -75,10 +75,10 @@ func (s *HttpServer) NotFound(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *HttpServer) Deploy(h RouteHandler) {
+func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	r := h.HandleRoutes(s.router, s.errorHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle("/", r)
+	http.Handle(fmt.Sprintf("/%s", context), r)
 	r.NotFoundHandler = http.HandlerFunc(s.NotFound)
 }
 

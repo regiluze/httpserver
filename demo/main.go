@@ -18,7 +18,7 @@ func main() {
 	server := httpserver.NewHttpServer(*address, *port)
 	server.SetErrTemplate(ErrorTemplate)
 	server.SetNotFoundTemplate(NotFoundTemplate)
-	server.Deploy(uploadImageApp)
+	server.Deploy("upload", uploadImageApp)
 	error := server.Start()
 	if error != nil {
 		fmt.Println(error)
