@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -24,11 +25,12 @@ func check(err error) {
 }
 
 type ImageUploaderHandler struct {
+	context string
 }
 
 func NewImageUploadHandler() *ImageUploaderHandler {
 
-	iuh := &ImageUploaderHandler{context: c}
+	iuh := &ImageUploaderHandler{}
 	return iuh
 
 }
@@ -46,7 +48,8 @@ func (iuh *ImageUploaderHandler) upload(w http.ResponseWriter, r *http.Request) 
 	defer t.Close()
 	_, copyErr := io.Copy(t, f)
 	check(copyErr)
-	http.Redirect(w, r, "/view?id="+t.Name()[17:], 302)
+	fmt.Println("egi>>", iuh.context)
+	http.Redirect(w, r, fmt.Sprintf("%s/view/?id=", iuh.context)+t.Name()[17:], 302)
 }
 
 func (iuh *ImageUploaderHandler) view(w http.ResponseWriter, r *http.Request) {
@@ -55,9 +58,8 @@ func (iuh *ImageUploaderHandler) view(w http.ResponseWriter, r *http.Request) {
 }
 
 func (iuh *ImageUploaderHandler) HandleRoutes(context string, r *mux.Router, errFunc httpserver.ErrHandler) *mux.Router {
-
-	r.HandleFunc(fmt.Fprintf("/%s", context), errFunc(iuh.upload))
-	r.HandleFunc(fmt.Fprintf("/%s/view", context), errFunc(iuh.view))
+	iuh.context = "/" + context
+	r.HandleFunc(fmt.Sprintf("/%s/", context), errFunc(iuh.upload))
+	r.HandleFunc(fmt.Sprintf("/%s/view/", context), errFunc(iuh.view))
 	return r
-
 }
