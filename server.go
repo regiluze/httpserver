@@ -35,7 +35,7 @@ func NewHttpServer(a string, p string) *HttpServer {
 }
 
 type RouteHandler interface {
-	HandleRoutes(*mux.Router, ErrHandler) *mux.Router
+	HandleRoutes(string, *mux.Router, ErrHandler) *mux.Router
 }
 
 type ErrHandler func(http.HandlerFunc) http.HandlerFunc
@@ -76,9 +76,9 @@ func (s *HttpServer) NotFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
-	r := h.HandleRoutes(s.router, s.errorHandler)
+	r := h.HandleRoutes(context, s.router, s.errorHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle(fmt.Sprintf("/%s/", context), r)
+	http.Handle("/", r)
 	r.NotFoundHandler = http.HandlerFunc(s.NotFound)
 }
 
