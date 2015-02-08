@@ -75,6 +75,10 @@ func (s *HttpServer) NotFound(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (s *HttpServer) DeployAtBase(h RouteHandler) {
+	s.Deploy("", h)
+}
+
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	r := h.HandleRoutes(context, s.router, s.errorHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

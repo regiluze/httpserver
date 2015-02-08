@@ -34,7 +34,7 @@ type ImageUploaderHandler struct {
 
 func NewImageUploadHandler() *ImageUploaderHandler {
 
-	iuh := &ImageUploaderHandler{}
+	iuh := &ImageUploaderHandler{Context: ""}
 	return iuh
 
 }
@@ -61,8 +61,12 @@ func (iuh *ImageUploaderHandler) view(w http.ResponseWriter, r *http.Request) {
 }
 
 func (iuh *ImageUploaderHandler) HandleRoutes(context string, r *mux.Router, errFunc httpserver.ErrHandler) *mux.Router {
-	iuh.Context = "/" + context
-	r.HandleFunc(fmt.Sprintf("/%s/", context), errFunc(iuh.upload))
-	r.HandleFunc(fmt.Sprintf("/%s/view/", context), errFunc(iuh.view))
+	ctx := ""
+	if len(context) != 0 {
+		iuh.Context = "/" + context
+		ctx = "/"
+	}
+	r.HandleFunc(fmt.Sprintf("%s%s/", ctx, context), errFunc(iuh.upload))
+	r.HandleFunc(fmt.Sprintf("%s%s/view/", ctx, context), errFunc(iuh.view))
 	return r
 }
