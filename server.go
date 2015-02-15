@@ -41,7 +41,7 @@ func (s *HttpServer) SetNotFoundTemplate(t *template.Template) {
 	s.notFoundTemplate = t
 }
 
-func (s *HttpServer) errorHandler(route *Route) http.HandlerFunc {
+func (s *HttpServer) errorHandler(route *httpserver.Route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
