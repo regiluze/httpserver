@@ -60,8 +60,8 @@ func (iuh *ImageUploaderHandler) view(w http.ResponseWriter, r *http.Request) {
 }
 
 func (iuh *ImageUploaderHandler) GetRoutes() []*httpserver.Route {
-	root := httpserver.NewRoute("", iuh.upload)
-	view := httpserver.NewRoute("view/", iuh.view)
+	root := httpserver.NewRoute("", httpserver.SkipCheckHttpMethod, iuh.upload)
+	view := httpserver.NewRoute("view/", httpserver.GetMethod, iuh.view)
 	routes := []*httpserver.Route{root, view}
 	return routes
 }
