@@ -11,6 +11,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type ServerRoute struct {
+	path     string
+	function http.HandlerFunc
+}
+
 type ServerError struct {
 	Msg string
 }
@@ -35,7 +40,7 @@ func NewHttpServer(a string, p string) *HttpServer {
 }
 
 type RouteHandler interface {
-	HandleRoutes(string, *mux.Router, ErrHandler) *mux.Router
+	GetRoutes() []ServerRoute
 }
 
 type ErrHandler func(http.HandlerFunc) http.HandlerFunc
@@ -80,10 +85,14 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 }
 
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
-	r := h.HandleRoutes(context, s.router, s.errorHandler)
+	//r := h.HandleRoutes(context, s.router, s.errorHandler)
+	routes := h.GetRoutes()
+	for _, r := range routes {
+		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.path), r.function)
+	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle("/", r)
-	r.NotFoundHandler = http.HandlerFunc(s.NotFound)
+	http.Handle("/", s.router)
+	s.router.NotFoundHandler = http.HandlerFunc(s.NotFound)
 }
 
 func (s *HttpServer) Start() error {
