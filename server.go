@@ -94,7 +94,6 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	routes := h.GetRoutes()
 	for _, r := range routes {
-		fmt.Println(fmt.Sprintf("%s/%s", context, r.path))
 		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.path), r.handleFunc)
 	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
