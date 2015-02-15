@@ -73,6 +73,7 @@ func (s *HttpServer) errorHandler(fn http.HandlerFunc) http.HandlerFunc {
 				}
 			}
 		}()
+		fmt.Println("error handler func...")
 		fn(w, r)
 	}
 }
