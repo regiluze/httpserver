@@ -11,6 +11,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	SkipCheckHttpMethod = ""
+	GetMethod           = "GET"
+	PutMethod           = "PUT"
+	PostMethod          = "POST"
+	DeleteMethod        = "DELETE"
+)
+
 type Route struct {
 	Path       string
 	Method     string
