@@ -11,9 +11,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ServerRoute struct {
-	path     string
-	function http.HandlerFunc
+type Route struct {
+	path       string
+	handleFunc http.HandlerFunc
+}
+
+func NewRoute(p string, hf http.HandlerFunc) *Route {
+
+	r := &Route{path: p, handleFunc: hf}
+	return r
+
 }
 
 type ServerError struct {
@@ -40,7 +47,7 @@ func NewHttpServer(a string, p string) *HttpServer {
 }
 
 type RouteHandler interface {
-	GetRoutes() []ServerRoute
+	GetRoutes() []Route
 }
 
 type ErrHandler func(http.HandlerFunc) http.HandlerFunc
@@ -85,10 +92,9 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 }
 
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
-	//r := h.HandleRoutes(context, s.router, s.errorHandler)
 	routes := h.GetRoutes()
 	for _, r := range routes {
-		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.path), r.function)
+		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.path), r.handleFunc)
 	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.router)
