@@ -29,7 +29,7 @@ type HttpServer struct {
 
 func NewHttpServer(a string, p string) *HttpServer {
 	r := mux.NewRouter()
-	s := &HttpServer{router: r, address: a, port: p}
+	s := &HttpServer{Router: r, address: a, port: p}
 	return s
 }
 
@@ -79,13 +79,13 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	routes := h.GetRoutes()
 	for _, r := range routes {
-		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
+		s.Router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
 	}
 }
 
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle("/", s.router)
-	s.router.NotFoundHandler = http.HandlerFunc(s.NotFound)
+	http.Handle("/", s.Router)
+	s.Router.NotFoundHandler = http.HandlerFunc(s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
