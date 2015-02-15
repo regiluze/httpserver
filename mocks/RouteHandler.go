@@ -1,16 +1,15 @@
 package mocks
 
-import "../../httpserver"
-import "github.com/stretchr/testify/mock"
+import (
+	"github.com/stretchr/testify/mock"
+	"net/http"
+)
 
-type RouteHandler struct {
+type Router struct {
 	mock.Mock
 }
 
-func (m *RouteHandler) GetRoutes() []*httpserver.Route {
-	ret := m.Called()
+func (m *Router) HandleFunc(context string, fn http.HandlerFunc) {
+	m.Called()
 
-	r0 := ret.Get(0).([]*httpserver.Route)
-
-	return r0
 }

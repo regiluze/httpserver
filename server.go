@@ -24,7 +24,7 @@ type HttpServer struct {
 	address          string
 	errTemplate      *template.Template
 	notFoundTemplate *template.Template
-	router           *mux.Router
+	Router           *mux.Router
 }
 
 func NewHttpServer(a string, p string) *HttpServer {
