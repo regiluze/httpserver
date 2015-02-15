@@ -12,14 +12,22 @@ import (
 )
 
 type Route struct {
-	path       string
-	handleFunc http.HandlerFunc
+	Path       string
+	Method     string
+	HandleFunc http.HandlerFunc
 }
 
-func NewRoute(p string, hf http.HandlerFunc) *Route {
-
-	r := &Route{path: p, handleFunc: hf}
+func NewRoute(p string, m string, hf http.HandlerFunc) *Route {
+	r := &Route{Path: p, Method: m, HandleFunc: hf}
 	return r
+}
+
+func (r *Route) HasIncorrectHttpMethod(method string) bool {
+
+	if len(r.Method) != 0 && method != r.Method {
+		return true
+	}
+	return false
 
 }
 
@@ -50,8 +58,6 @@ type RouteHandler interface {
 	GetRoutes() []*Route
 }
 
-type ErrHandler func(http.HandlerFunc) http.HandlerFunc
-
 func (s *HttpServer) SetErrTemplate(t *template.Template) {
 	s.errTemplate = t
 }
@@ -60,7 +66,7 @@ func (s *HttpServer) SetNotFoundTemplate(t *template.Template) {
 	s.notFoundTemplate = t
 }
 
-func (s *HttpServer) errorHandler(fn http.HandlerFunc) http.HandlerFunc {
+func (s *HttpServer) errorHandler(route *Route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recoverErr := recover(); recoverErr != nil {
@@ -73,8 +79,11 @@ func (s *HttpServer) errorHandler(fn http.HandlerFunc) http.HandlerFunc {
 				}
 			}
 		}()
-		fmt.Println("error handler func...")
-		fn(w, r)
+		if route.HasIncorrectHttpMethod(r.Method) {
+			http.Error(w, "Method not allowed", 405)
+			return
+		}
+		route.HandleFunc(w, r)
 	}
 }
 func (s *HttpServer) NotFound(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +104,7 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	routes := h.GetRoutes()
 	for _, r := range routes {
-		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.path), s.errorHandler(r.handleFunc))
+		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
 	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.router)
