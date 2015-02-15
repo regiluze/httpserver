@@ -81,11 +81,11 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) {
 	for _, r := range routes {
 		s.router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
 	}
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle("/", s.router)
-	s.router.NotFoundHandler = http.HandlerFunc(s.NotFound)
 }
 
 func (s *HttpServer) Start() error {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	http.Handle("/", s.router)
+	s.router.NotFoundHandler = http.HandlerFunc(s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
