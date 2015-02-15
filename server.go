@@ -47,7 +47,7 @@ func NewHttpServer(a string, p string) *HttpServer {
 }
 
 type RouteHandler interface {
-	GetRoutes() []Route
+	GetRoutes() []*Route
 }
 
 type ErrHandler func(http.HandlerFunc) http.HandlerFunc
