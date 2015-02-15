@@ -10,15 +10,19 @@ import (
 	"github.com/regiluze/httpserver"
 )
 
+const (
+	Context = ""
+)
+
 func main() {
 	port := flag.String("port", "8080", "listen port")
 	address := flag.String("address", "0.0.0.0", "server address")
 	flag.Parse()
-	uploadImageApp := NewImageUploadHandler()
+	uploadImageApp := NewImageUploadHandler(Context)
 	server := httpserver.NewHttpServer(*address, *port)
 	server.SetErrTemplate(ErrorTemplate)
 	server.SetNotFoundTemplate(NotFoundTemplate)
-	server.Deploy("", uploadImageApp)
+	server.Deploy(Context, uploadImageApp)
 	error := server.Start()
 	if error != nil {
 		fmt.Println(error)

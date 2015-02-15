@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/gorilla/mux"
 	"github.com/regiluze/httpserver"
 )
 
@@ -32,9 +31,9 @@ type ImageUploaderHandler struct {
 	Context string
 }
 
-func NewImageUploadHandler() *ImageUploaderHandler {
+func NewImageUploadHandler(c string) *ImageUploaderHandler {
 
-	iuh := &ImageUploaderHandler{}
+	iuh := &ImageUploaderHandler{Context: c}
 	return iuh
 
 }
@@ -60,9 +59,9 @@ func (iuh *ImageUploaderHandler) view(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "static/img/image-"+r.FormValue("id"))
 }
 
-func (iuh *ImageUploaderHandler) HandleRoutes(context string, r *mux.Router, errFunc httpserver.ErrHandler) *mux.Router {
-	iuh.Context = context
-	r.HandleFunc(fmt.Sprintf("%s/", context), errFunc(iuh.upload))
-	r.HandleFunc(fmt.Sprintf("%s/view/", context), errFunc(iuh.view))
-	return r
+func (iuh *ImageUploaderHandler) GetRoutes() []*httpserver.Route {
+	root := httpserver.NewRoute("", iuh.upload)
+	view := httpserver.NewRoute("view/", iuh.view)
+	routes := []*httpserver.Route{root, view}
+	return routes
 }
