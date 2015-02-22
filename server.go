@@ -33,7 +33,8 @@ type HttpRouter interface {
 	ServeHTTP(http.ResponseWriter, *http.Request)
 }
 
-func NewHttpServer(router HttpRouter, a string, p string) *HttpServer {
+func NewHttpServer(a string, p string) *HttpServer {
+	router := mux.NewRouter()
 	s := &HttpServer{Router: router, address: a, port: p}
 	return s
 }
