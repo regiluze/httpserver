@@ -20,12 +20,35 @@ const (
 	DeleteMethod        = "DELETE"
 )
 
+type NotFoundHandler interface {
+	Handle(interface{}, func(http.ResponseWriter, *http.Request))
+}
+
+type GorillaNotFoundHandler struct {
+}
+
+func (g *GorillaNotFoundHandler) Handle(router interface{}, handleFunc func(http.ResponseWriter, *http.Request)) {
+
+	var gorillaRouter *mux.Router
+	gorillaRouter = router.(*mux.Router)
+	gorillaRouter.NotFoundHandler = http.HandlerFunc(handleFunc)
+
+}
+
+func NewGorillaNotFoundHandler() *GorillaNotFoundHandler {
+
+	handler := &GorillaNotFoundHandler{}
+	return handler
+
+}
+
 type HttpServer struct {
 	port             string
 	address          string
 	errTemplate      *template.Template
 	notFoundTemplate *template.Template
 	Router           HttpRouter
+	notFoundHandler  NotFoundHandler
 }
 
 type HttpRouter interface {
@@ -36,7 +59,8 @@ type HttpRouter interface {
 
 func NewHttpServer(a string, p string) *HttpServer {
 	router := mux.NewRouter()
-	s := &HttpServer{Router: router, address: a, port: p}
+	gorillaHandler := NewGorillaNotFoundHandler()
+	s := &HttpServer{Router: router, address: a, port: p, notFoundHandler: gorillaHandler}
 	return s
 }
 
@@ -99,6 +123,7 @@ func (s *HttpServer) Start() error {
 			ss.Field(i).Name)
 	}
 	fmt.Println("egi")
+	s.notFoundHandler.Handle(s.Router, s.NotFound)
 	//http.NotFoundHandler = http.HandlerFunc(s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
