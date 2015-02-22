@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
-	//	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -20,6 +20,11 @@ const (
 func buildSingleRoute() []*Route {
 	root := NewRoute("", SkipCheckHttpMethod, FakeHandleFunc)
 	routes := []*Route{root}
+	return routes
+}
+
+func buildWrongRoute() []*Route {
+	routes := []*Route{}
 	return routes
 }
 
@@ -56,6 +61,15 @@ var _ = Describe("Server", func() {
 				server.Deploy("/", routeHandler)
 
 				router.AssertNumberOfCalls(GinkgoT(), "HandleFunc", 1)
+			})
+			It("raises an error with route handler without routes", func() {
+				wrongRouteHandler := new(mocks.RouteHandler)
+				wrongRouteHandler.On("GetRoutes").Return(buildWrongRoute())
+				var err error
+
+				err = server.Deploy("/", wrongRouteHandler)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})
