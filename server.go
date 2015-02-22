@@ -28,7 +28,7 @@ type HttpServer struct {
 }
 
 type HttpRouter interface {
-	HandleFunc(string, http.HandlerFunc)
+	HandleFunc(string, http.HandlerFunc) *mux.Route
 	Handle(string, http.Handler) *mux.Route
 	ServeHTTP(http.ResponseWriter, *http.Request)
 	NotFoundHandler() http.Handler
