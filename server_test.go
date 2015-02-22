@@ -2,7 +2,7 @@ package httpserver_test
 
 import (
 	"./mocks"
-	"fmt"
+	//	"fmt"
 	. "github.com/regiluze/httpserver"
 	"net/http"
 
@@ -31,14 +31,24 @@ func (fake *FakeRouteImplementation) HandleFunc(w http.ResponseWriter, r *http.R
 
 var _ = Describe("Server", func() {
 
+	var (
+		router       *mocks.HttpRouter
+		routeHandler *FakeRouteImplementation
+		server       *HttpServer
+	)
+
+	BeforeEach(func() {
+		routeHandler = new(FakeRouteImplementation)
+		router = new(mocks.HttpRouter)
+		router.On("HandleFunc", mock.Anything, mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
+
+		server = NewHttpServer(IrrelevantAddress, IrrelevantPort)
+		server.Router = router
+	})
+
 	Describe("server init process", func() {
 		Context("deploy simple app", func() {
 			It("gets single route from handler", func() {
-				routeHandler := new(FakeRouteImplementation)
-				server := NewHttpServer(IrrelevantAddress, IrrelevantPort)
-				router := new(mocks.HttpRouter)
-				router.On("HandleFunc", mock.Anything, mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
-				server.Router = router
 
 				server.Deploy("/", routeHandler)
 
