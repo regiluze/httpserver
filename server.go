@@ -19,6 +19,13 @@ const (
 	DeleteMethod        = "DELETE"
 )
 
+type NoRoutesHandleError struct {
+}
+
+func (n *NoRoutesHandleError) Error() string {
+	return "Wrong Route handler, you should add at least one route"
+}
+
 type NotFoundHandler interface {
 	Handle(interface{}, func(http.ResponseWriter, *http.Request))
 }
@@ -106,11 +113,15 @@ func (s *HttpServer) DeployAtBase(h RouteHandler) {
 	s.Deploy("", h)
 }
 
-func (s *HttpServer) Deploy(context string, h RouteHandler) {
+func (s *HttpServer) Deploy(context string, h RouteHandler) error {
 	routes := h.GetRoutes()
+	if len(routes) == 0 {
+		return &NoRoutesHandleError{}
+	}
 	for _, r := range routes {
 		s.Router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
 	}
+	return nil
 }
 
 func (s *HttpServer) Start() error {
@@ -118,6 +129,5 @@ func (s *HttpServer) Start() error {
 	http.Handle("/", s.Router)
 	fmt.Println("egi")
 	s.notFoundHandler.Handle(s.Router, s.NotFound)
-	//http.NotFoundHandler = http.HandlerFunc(s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
