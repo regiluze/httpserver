@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"text/template"
 
-	//"github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -29,7 +29,7 @@ type HttpServer struct {
 
 type HttpRouter interface {
 	HandleFunc(string, http.HandlerFunc)
-	Handle(string, http.Handler)
+	Handle(string, http.Handler) *mux.Route
 	ServeHTTP(http.ResponseWriter, *http.Request)
 	NotFoundHandler() http.Handler
 }
