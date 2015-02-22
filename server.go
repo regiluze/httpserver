@@ -6,7 +6,6 @@ package httpserver
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"text/template"
 
 	"github.com/gorilla/mux"
@@ -117,11 +116,6 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) {
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.Router)
-	var ss = reflect.TypeOf((*HttpRouter)(nil)).Elem()
-	for i := 0; i < ss.NumField(); i++ {
-		fmt.Printf("%d: %s \n", i,
-			ss.Field(i).Name)
-	}
 	fmt.Println("egi")
 	s.notFoundHandler.Handle(s.Router, s.NotFound)
 	//http.NotFoundHandler = http.HandlerFunc(s.NotFound)
