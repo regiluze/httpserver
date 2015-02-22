@@ -93,12 +93,10 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) {
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.Router)
-	ss := reflect.ValueOf(&s.Router).Elem()
-	typeOfT := ss.Type()
+	var ss = reflect.TypeOf((*HttpRouter)(nil)).Elem()
 	for i := 0; i < ss.NumField(); i++ {
-		f := ss.Field(i)
-		fmt.Printf("%d: %s %s = %v\n", i,
-			typeOfT.Field(i).Name, f.Type(), f.Interface())
+		fmt.Printf("%d: %s \n", i,
+			ss.Field(i).Name)
 	}
 	fmt.Println("egi")
 	//http.NotFoundHandler = http.HandlerFunc(s.NotFound)
