@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/gorilla/mux"
+	//"github.com/gorilla/mux"
 )
 
 const (
@@ -24,12 +24,18 @@ type HttpServer struct {
 	address          string
 	errTemplate      *template.Template
 	notFoundTemplate *template.Template
-	Router           *mux.Router
+	Router           HttpRouter
 }
 
-func NewHttpServer(a string, p string) *HttpServer {
-	r := mux.NewRouter()
-	s := &HttpServer{Router: r, address: a, port: p}
+type HttpRouter interface {
+	HandleFunc(string, http.HandlerFunc)
+	Handle(string, http.Handler)
+	ServeHTTP(http.ResponseWriter, *http.Request)
+	NotFoundHandler() http.Handler
+}
+
+func NewHttpServer(router HttpRouter, a string, p string) *HttpServer {
+	s := &HttpServer{Router: router, address: a, port: p}
 	return s
 }
 
@@ -86,6 +92,6 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) {
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.Router)
-	s.Router.NotFoundHandler = http.HandlerFunc(s.NotFound)
+	//s.Router.NotFoundHandler = http.HandlerFunc(s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
