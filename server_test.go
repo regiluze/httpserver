@@ -17,28 +17,25 @@ const (
 	IrrelevantPort    = "80"
 )
 
-type FakeRouteImplementation struct{}
-
-func (fake *FakeRouteImplementation) GetRoutes() []*Route {
-
-	root := NewRoute("", SkipCheckHttpMethod, fake.HandleFunc)
+func buildSingleRoute() []*Route {
+	root := NewRoute("", SkipCheckHttpMethod, FakeHandleFunc)
 	routes := []*Route{root}
 	return routes
-
 }
 
-func (fake *FakeRouteImplementation) HandleFunc(w http.ResponseWriter, r *http.Request) {}
+func FakeHandleFunc(w http.ResponseWriter, r *http.Request) {}
 
 var _ = Describe("Server", func() {
 
 	var (
 		router       *mocks.HttpRouter
-		routeHandler *FakeRouteImplementation
+		routeHandler *mocks.RouteHandler
 		server       *HttpServer
 	)
 
 	BeforeEach(func() {
-		routeHandler = new(FakeRouteImplementation)
+		routeHandler = new(mocks.RouteHandler)
+		routeHandler.On("GetRoutes").Return(buildSingleRoute())
 		router = new(mocks.HttpRouter)
 		router.On("HandleFunc", mock.Anything, mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
 
@@ -49,6 +46,12 @@ var _ = Describe("Server", func() {
 	Describe("server init process", func() {
 		Context("deploy simple app", func() {
 			It("gets single route from handler", func() {
+
+				server.Deploy("/", routeHandler)
+
+				routeHandler.AssertNumberOfCalls(GinkgoT(), "GetRoutes", 1)
+			})
+			It("adds single handle func to router handlerFunc", func() {
 
 				server.Deploy("/", routeHandler)
 
