@@ -31,7 +31,6 @@ type HttpRouter interface {
 	HandleFunc(string, func(http.ResponseWriter, *http.Request)) *mux.Route
 	Handle(string, http.Handler) *mux.Route
 	ServeHTTP(http.ResponseWriter, *http.Request)
-	NotFoundHandler() http.Handler
 }
 
 func NewHttpServer(router HttpRouter, a string, p string) *HttpServer {
