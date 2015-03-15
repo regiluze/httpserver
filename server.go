@@ -54,7 +54,7 @@ type HttpServer struct {
 	errTemplate      *template.Template
 	notFoundTemplate *template.Template
 	Router           HttpRouter
-	notFoundHandler  NotFoundHandler
+	NotFoundHandler  NotFoundHandler
 }
 
 type HttpRouter interface {
@@ -66,7 +66,7 @@ type HttpRouter interface {
 func NewHttpServer(a string, p string) *HttpServer {
 	router := mux.NewRouter()
 	gorillaHandler := NewGorillaNotFoundHandler()
-	s := &HttpServer{Router: router, address: a, port: p, notFoundHandler: gorillaHandler}
+	s := &HttpServer{Router: router, address: a, port: p, NotFoundHandler: gorillaHandler}
 	return s
 }
 
@@ -127,7 +127,6 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) error {
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.Router)
-	fmt.Println("egi")
 	s.notFoundHandler.Handle(s.Router, s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
