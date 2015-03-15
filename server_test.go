@@ -33,9 +33,10 @@ func FakeHandleFunc(w http.ResponseWriter, r *http.Request) {}
 var _ = Describe("Server", func() {
 
 	var (
-		router       *mocks.HttpRouter
-		routeHandler *mocks.RouteHandler
-		server       *HttpServer
+		router          *mocks.HttpRouter
+		routeHandler    *mocks.RouteHandler
+		server          *HttpServer
+		notFoundHandler *mocks.NotFoundHandler
 	)
 
 	BeforeEach(func() {
@@ -46,6 +47,9 @@ var _ = Describe("Server", func() {
 
 		server = NewHttpServer(IrrelevantAddress, IrrelevantPort)
 		server.Router = router
+		notFoundHandler = new(mocks.NotFoundHandler)
+		server.NotFoundHandler = notFoundHandler
+		notFoundHandler.On("Handle", mock.Anything, mock.Anything).Return(nil)
 	})
 
 	Describe("server init process", func() {
@@ -70,6 +74,15 @@ var _ = Describe("Server", func() {
 				err = server.Deploy("/", wrongRouteHandler)
 
 				Expect(err).To(HaveOccurred())
+			})
+
+		})
+		Context("start server", func() {
+			It("calls not found handler func", func() {
+
+				server.Start()
+
+				notFoundHandler.AssertNumberOfCalls(GinkgoT(), "Handle", 1)
 			})
 		})
 	})
