@@ -127,6 +127,6 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) error {
 func (s *HttpServer) Start() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", s.Router)
-	s.notFoundHandler.Handle(s.Router, s.NotFound)
+	s.NotFoundHandler.Handle(s.Router, s.NotFound)
 	return http.ListenAndServe(fmt.Sprintf("%s:%s", s.address, s.port), nil)
 }
