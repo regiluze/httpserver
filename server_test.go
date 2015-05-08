@@ -2,7 +2,6 @@ package httpserver_test
 
 import (
 	"./mocks"
-	//	"fmt"
 	. "github.com/regiluze/httpserver"
 	"net/http"
 
@@ -43,7 +42,7 @@ var _ = Describe("Server", func() {
 		routeHandler = new(mocks.RouteHandler)
 		routeHandler.On("GetRoutes").Return(buildSingleRoute())
 		router = new(mocks.HttpRouter)
-		router.On("HandleFunc", mock.Anything, mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
+		router.On("HandleFunc", mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
 
 		server = NewHttpServer(IrrelevantAddress, IrrelevantPort)
 		server.Router = router
@@ -74,6 +73,16 @@ var _ = Describe("Server", func() {
 				err = server.Deploy("/", wrongRouteHandler)
 
 				Expect(err).To(HaveOccurred())
+			})
+			Context("context name not start with / ", func() {
+				It("adds an slash at the begining of the context name", func() {
+					server.Deploy("oneContext", routeHandler)
+
+					router.On("HandleFunc", mock.Anything, mock.Anything).Return(mux.NewRouter().NewRoute())
+
+					router.AssertCalled(GinkgoT(), "HandleFunc", "/oneContext/", mock.Anything)
+
+				})
 			})
 
 		})

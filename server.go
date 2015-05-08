@@ -6,6 +6,7 @@ package httpserver
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/gorilla/mux"
@@ -117,6 +118,9 @@ func (s *HttpServer) Deploy(context string, h RouteHandler) error {
 	routes := h.GetRoutes()
 	if len(routes) == 0 {
 		return &NoRoutesHandleError{}
+	}
+	if !strings.HasPrefix(context, "/") {
+		context = fmt.Sprintf("/%s", context)
 	}
 	for _, r := range routes {
 		s.Router.HandleFunc(fmt.Sprintf("%s/%s", context, r.Path), s.errorHandler(r))
